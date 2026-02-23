@@ -4,192 +4,659 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>fbcookie & Token</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Poppins', 'Montserrat', sans-serif;
-            width: 350px;
-            margin: 0;
-            padding: 15px;
-            background-color: #f0f2f5;
-            color: #000000;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --neon-blue: #00f3ff;
+            --neon-pink: #ff00ff;
+            --neon-green: #00ff88;
+            --neon-purple: #bf00ff;
+            --neon-orange: #ff6600;
+            --dark-bg: #050510;
         }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes borderRotate {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes scanLine {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(600px); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-4px); }
+        }
+
+        @keyframes neonPulse {
+            0%, 100% { opacity: 1; text-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue), 0 0 40px var(--neon-blue); }
+            50% { opacity: 0.8; text-shadow: 0 0 5px var(--neon-blue), 0 0 10px var(--neon-blue); }
+        }
+
+        @keyframes glitch {
+            0% { clip-path: inset(40% 0 61% 0); transform: translate(-2px, 0); }
+            20% { clip-path: inset(92% 0 1% 0); transform: translate(2px, 0); }
+            40% { clip-path: inset(43% 0 1% 0); transform: translate(-2px, 0); }
+            60% { clip-path: inset(25% 0 58% 0); transform: translate(2px, 0); }
+            80% { clip-path: inset(54% 0 7% 0); transform: translate(-2px, 0); }
+            100% { clip-path: inset(58% 0 43% 0); transform: translate(0); }
+        }
+
+        @keyframes ripple {
+            0% { transform: scale(0); opacity: 0.8; }
+            100% { transform: scale(4); opacity: 0; }
+        }
+
+        @keyframes particleUp {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-60px) scale(0); opacity: 0; }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            width: 390px;
+            background: var(--dark-bg);
+            color: #fff;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 20% 20%, rgba(0,243,255,0.07) 0%, transparent 55%),
+                radial-gradient(ellipse at 80% 80%, rgba(255,0,255,0.07) 0%, transparent 55%),
+                radial-gradient(ellipse at 60% 30%, rgba(0,255,136,0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0,243,255,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,243,255,0.025) 1px, transparent 1px);
+            background-size: 22px 22px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .main-container {
+            position: relative;
+            z-index: 1;
+            padding: 14px;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .neon-border-box {
+            position: relative;
+            border-radius: 14px;
+            background: rgba(10,10,30,0.97);
+        }
+
+        .neon-border-box::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 14px;
+            padding: 1.5px;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-pink), var(--neon-green), var(--neon-purple), var(--neon-blue));
+            background-size: 300% 300%;
+            animation: borderRotate 4s ease infinite;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
         .header {
             display: flex;
             align-items: center;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 10px;
+            margin-bottom: 14px;
+            padding: 13px 16px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, rgba(0,243,255,0.08), rgba(255,0,255,0.08));
+            position: relative;
+            overflow: hidden;
+            animation: float 4s ease-in-out infinite;
         }
-        .header img {
-            width: 32px;
-            height: 32px;
-            margin-right: 10px;
+
+        .header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 14px;
+            padding: 1.5px;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink), var(--neon-purple), var(--neon-green), var(--neon-blue));
+            background-size: 300% 300%;
+            animation: borderRotate 3s ease infinite;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
         }
+
+        .header-scan {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--neon-blue), transparent);
+            animation: scanLine 3s linear infinite;
+        }
+
+        .logo-wrapper {
+            position: relative;
+            width: 42px;
+            height: 42px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .logo-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-pink));
+            animation: spin 3s linear infinite;
+            padding: 2px;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+        }
+
+        .logo-wrapper img {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-text-wrap { flex: 1; }
+
         .header h1 {
-            font-size: 18px;
-            margin: 0;
-            color: #000000;
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 600;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 15px;
+            font-weight: 900;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink), var(--neon-green));
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease infinite;
+            position: relative;
         }
+
+        .header-subtitle {
+            font-size: 10px;
+            color: rgba(0,243,255,0.6);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--neon-green);
+            box-shadow: 0 0 8px var(--neon-green), 0 0 16px var(--neon-green);
+            animation: neonPulse 1.5s ease-in-out infinite;
+            flex-shrink: 0;
+        }
+
+        #fb_id {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 12px;
+            margin-bottom: 12px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, rgba(0,243,255,0.06), rgba(191,0,255,0.06));
+            border: 1px solid rgba(0,243,255,0.15);
+            letter-spacing: 1px;
+            color: var(--neon-blue);
+            text-shadow: 0 0 8px rgba(0,243,255,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #fb_id::before {
+            content: '◈';
+            color: var(--neon-pink);
+            font-size: 14px;
+            text-shadow: 0 0 10px var(--neon-pink);
+        }
+
         .section {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
+
         label {
             display: block;
-            font-weight: 600;
-            margin-bottom: 5px;
-            font-size: 13px;
-            color: #000000;
+            font-weight: 700;
+            margin-bottom: 6px;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            position: relative;
+            padding-left: 12px;
         }
+
+        label::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 14px;
+            border-radius: 2px;
+        }
+
+        .label-cookie { color: var(--neon-blue); }
+        .label-cookie::before { background: linear-gradient(to bottom, var(--neon-blue), var(--neon-purple)); box-shadow: 0 0 6px var(--neon-blue); }
+
+        .label-token1 { color: var(--neon-pink); }
+        .label-token1::before { background: linear-gradient(to bottom, var(--neon-pink), var(--neon-orange)); box-shadow: 0 0 6px var(--neon-pink); }
+
+        .label-token2 { color: var(--neon-green); }
+        .label-token2::before { background: linear-gradient(to bottom, var(--neon-green), var(--neon-blue)); box-shadow: 0 0 6px var(--neon-green); }
+
+        .textarea-wrapper {
+            position: relative;
+        }
+
         textarea {
             width: 100%;
-            height: 80px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            padding: 8px;
-            font-size: 12px;
-            resize: none;
-            box-sizing: border-box;
-            background: #fff;
-            color: #000000;
-        }
-        .info {
-            font-size: 12px;
-            color: #000000;
-            margin-top: 5px;
-        }
-        .buttons {
-            display: flex;
-            gap: 8px;
-            margin-top: 10px;
-        }
-        button {
-            flex: 1;
-            padding: 8px;
+            height: 78px;
             border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 13px;
-            transition: background 0.2s;
-            font-family: 'Poppins', sans-serif;
-        }
-        #btnGetAccessToken {
-            background-color: #1877f2;
-            color: white;
-        }
-        #btnGetAccessToken:hover {
-            background-color: #166fe5;
-        }
-        #btnImportCookie {
-            background-color: #42b72a;
-            color: white;
-        }
-        #btnImportCookie:hover {
-            background-color: #36a420;
-        }
-        #btncookielogout {
-            background-color: #e4e6eb;
-            color: #000000;
-        }
-        #btncookielogout:hover {
-            background-color: #d8dadf;
-        }
-        .alert-error {
-            color: #d93025;
+            border-radius: 10px;
+            padding: 10px 12px;
             font-size: 11px;
-            margin-top: 5px;
+            font-family: 'Courier New', monospace;
+            resize: none;
+            background: rgba(5,5,20,0.95);
+            color: #e0e0ff;
+            outline: none;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
         }
-        #fb_id {
-            font-weight: bold;
-            color: #000000;
-            margin-bottom: 10px;
-            display: block;
+
+        .cookie-ta { border: 1px solid rgba(0,243,255,0.2); }
+        .cookie-ta:focus { border-color: var(--neon-blue); box-shadow: 0 0 10px rgba(0,243,255,0.25), inset 0 0 10px rgba(0,243,255,0.03); }
+
+        .token1-ta { border: 1px solid rgba(255,0,255,0.2); }
+        .token1-ta:focus { border-color: var(--neon-pink); box-shadow: 0 0 10px rgba(255,0,255,0.25), inset 0 0 10px rgba(255,0,255,0.03); }
+
+        .token2-ta { border: 1px solid rgba(0,255,136,0.2); }
+        .token2-ta:focus { border-color: var(--neon-green); box-shadow: 0 0 10px rgba(0,255,136,0.25), inset 0 0 10px rgba(0,255,136,0.03); }
+
+        textarea::placeholder { color: rgba(255,255,255,0.18); font-style: italic; }
+
+        .copy-btn {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            z-index: 2;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 6px;
+            color: rgba(255,255,255,0.4);
+            font-size: 10px;
+            padding: 3px 7px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            letter-spacing: 1px;
         }
+
+        .copy-btn:hover { background: rgba(0,243,255,0.1); color: var(--neon-blue); border-color: var(--neon-blue); box-shadow: 0 0 8px rgba(0,243,255,0.3); }
+
+        .user-agent-section {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            padding: 7px 10px;
+            border-radius: 8px;
+            background: rgba(0,243,255,0.04);
+            border: 1px solid rgba(0,243,255,0.1);
+        }
+
+        .user-agent-section input[type="checkbox"] {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border: 1.5px solid rgba(0,243,255,0.4);
+            border-radius: 4px;
+            background: transparent;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .user-agent-section input[type="checkbox"]:checked {
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 8px rgba(0,243,255,0.5);
+        }
+
+        .user-agent-section input[type="checkbox"]:checked::after {
+            content: '✓';
+            position: absolute;
+            top: -1px;
+            left: 2px;
+            font-size: 11px;
+            color: #fff;
+        }
+
+        .user-agent-section label {
+            display: inline;
+            font-size: 11px;
+            color: rgba(0,243,255,0.7);
+            letter-spacing: 1px;
+            padding-left: 0;
+            margin: 0;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+
+        .user-agent-section label::before { display: none; }
+
+        .alert-error {
+            color: #ff4466;
+            font-size: 11px;
+            margin-top: 4px;
+            letter-spacing: 1px;
+            text-shadow: 0 0 8px rgba(255,68,102,0.6);
+        }
+
         .loading-example {
             display: none;
             text-align: center;
-            font-size: 12px;
-            color: #000000;
+            font-size: 11px;
+            color: var(--neon-blue);
             margin-top: 5px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            animation: neonPulse 1s ease-in-out infinite;
         }
+
+        .buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        button {
+            flex: 1;
+            padding: 10px 6px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 11px;
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(255,255,255,0);
+            transition: background 0.2s;
+        }
+
+        button:hover::after { background: rgba(255,255,255,0.06); }
+
+        button:active { transform: scale(0.96); }
+
+        #btnGetAccessToken {
+            background: linear-gradient(135deg, #0050ff, #00b4ff, #00f3ff);
+            background-size: 200% 200%;
+            color: #fff;
+            box-shadow: 0 0 12px rgba(0,180,255,0.5), 0 4px 15px rgba(0,80,255,0.4);
+            animation: gradientShift 3s ease infinite;
+        }
+
+        #btnGetAccessToken:hover {
+            box-shadow: 0 0 20px rgba(0,243,255,0.7), 0 4px 25px rgba(0,80,255,0.6);
+            transform: translateY(-2px);
+        }
+
+        #btnImportCookie {
+            background: linear-gradient(135deg, #00c851, #00ff88, #00e5ff);
+            background-size: 200% 200%;
+            color: #000;
+            box-shadow: 0 0 12px rgba(0,255,136,0.5), 0 4px 15px rgba(0,200,81,0.4);
+            animation: gradientShift 3s ease infinite;
+        }
+
+        #btnImportCookie:hover {
+            box-shadow: 0 0 20px rgba(0,255,136,0.7), 0 4px 25px rgba(0,200,81,0.6);
+            transform: translateY(-2px);
+        }
+
+        #btncookielogout {
+            background: linear-gradient(135deg, #ff0055, #ff00ff, #bf00ff);
+            background-size: 200% 200%;
+            color: #fff;
+            box-shadow: 0 0 12px rgba(255,0,255,0.5), 0 4px 15px rgba(255,0,85,0.4);
+            animation: gradientShift 3s ease infinite;
+        }
+
+        #btncookielogout:hover {
+            box-shadow: 0 0 20px rgba(255,0,255,0.7), 0 4px 25px rgba(255,0,85,0.6);
+            transform: translateY(-2px);
+        }
+
         #list_cookie {
-            margin-top: 15px;
-            max-height: 150px;
+            margin-top: 14px;
+            max-height: 155px;
             overflow-y: auto;
-            border-top: 1px solid #ddd;
-            padding-top: 10px;
+            border-radius: 12px;
+            background: rgba(5,5,20,0.8);
+            border: 1px solid rgba(0,243,255,0.12);
         }
+
+        #list_cookie::-webkit-scrollbar { width: 4px; }
+        #list_cookie::-webkit-scrollbar-track { background: transparent; }
+        #list_cookie::-webkit-scrollbar-thumb { background: linear-gradient(to bottom, var(--neon-blue), var(--neon-pink)); border-radius: 2px; }
+
+        .list-header {
+            padding: 8px 12px;
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(0,243,255,0.5);
+            border-bottom: 1px solid rgba(0,243,255,0.08);
+            font-family: 'Orbitron', sans-serif;
+        }
+
         .cc {
-            padding: 5px;
-            border-bottom: 1px solid #eee;
+            padding: 8px 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
             cursor: pointer;
             font-size: 12px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            color: #000000;
+            gap: 8px;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
         }
-        .cc:hover {
-            background: #f7f8fa;
+
+        .cc::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--neon-blue), var(--neon-purple));
+            opacity: 0;
+            transition: opacity 0.2s;
         }
+
+        .cc:hover { background: rgba(0,243,255,0.05); }
+        .cc:hover::before { opacity: 1; }
+        .cc:last-child { border-bottom: none; }
+
+        .cc-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+            flex-shrink: 0;
+            color: #fff;
+        }
+
         .cc .fullname {
-            font-weight: bold;
+            font-weight: 700;
             flex-grow: 1;
-            margin-left: 5px;
-        }
-        .cc .delete {
-            color: #d93025;
-            cursor: pointer;
-            padding: 0 5px;
-        }
-        .user-agent-section {
+            color: rgba(255,255,255,0.85);
             font-size: 12px;
-            margin-top: 5px;
-            color: #000000;
+            letter-spacing: 0.5px;
         }
+
+        .cc .delete {
+            color: rgba(255,68,102,0.6);
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: all 0.2s;
+            line-height: 1;
+        }
+
+        .cc .delete:hover { color: #ff4466; background: rgba(255,68,102,0.1); box-shadow: 0 0 8px rgba(255,68,102,0.3); }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--neon-blue), var(--neon-pink), var(--neon-purple), transparent);
+            margin: 14px 0;
+            opacity: 0.3;
+        }
+
+        .corner-deco {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            opacity: 0.5;
+        }
+
+        .corner-deco.tl { top: 4px; left: 4px; border-top: 2px solid var(--neon-blue); border-left: 2px solid var(--neon-blue); }
+        .corner-deco.tr { top: 4px; right: 4px; border-top: 2px solid var(--neon-pink); border-right: 2px solid var(--neon-pink); }
+        .corner-deco.bl { bottom: 4px; left: 4px; border-bottom: 2px solid var(--neon-green); border-left: 2px solid var(--neon-green); }
+        .corner-deco.br { bottom: 4px; right: 4px; border-bottom: 2px solid var(--neon-purple); border-right: 2px solid var(--neon-purple); }
     </style>
 </head>
 <body>
-    <div class="header">
-        <img src="fbcookie.png" alt="Logo">
-        <h1>fbcookie & Token</h1>
-    </div>
+    <div class="main-container">
 
-    <span id="fb_id">Facebook id: Loading...</span>
-
-    <div class="section">
-        <label for="cookieResult">Cookie</label>
-        <textarea id="cookieResult" placeholder="Your FB cookies will appear here..."></textarea>
-        <div class="user-agent-section">
-            <input type="checkbox" id="user-agent" name="user-agent">
-            <label style="display: inline;" for="user-agent">Include User-Agent</label>
+        <div class="header">
+            <div class="header-scan"></div>
+            <div class="corner-deco tl"></div>
+            <div class="corner-deco tr"></div>
+            <div class="corner-deco bl"></div>
+            <div class="corner-deco br"></div>
+            <div class="logo-wrapper">
+            <img src="https://i.imgur.com/GRNsJbf.gif" alt="Logo">
+            </div>
+            <div class="header-text-wrap">
+                <h1>fbcookie & Token</h1>
+                <div class="header-subtitle">◆ Secure Session Manager ◆</div>
+            </div>
+            <div class="status-dot"></div>
         </div>
+
+        <span id="fb_id">Facebook ID: Loading...</span>
+
+        <div class="section">
+            <label class="label-cookie" for="cookieResult">Cookie Data</label>
+            <div class="textarea-wrapper">
+                <textarea id="cookieResult" class="cookie-ta" placeholder="Your FB cookies will appear here..."></textarea>
+                <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('cookieResult').value)">COPY</button>
+            </div>
+            <div class="user-agent-section">
+                <input type="checkbox" id="user-agent" name="user-agent">
+                <label for="user-agent">Include User-Agent</label>
+            </div>
+        </div>
+
+        <div class="section">
+            <label class="label-token1" for="tokenResult">Token — EAAG</label>
+            <div class="textarea-wrapper">
+                <textarea id="tokenResult" class="token1-ta" placeholder="Waiting for EAAG token..."></textarea>
+                <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('tokenResult').value)">COPY</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <label class="label-token2" for="tokenResult2">Token — EAAB</label>
+            <div class="textarea-wrapper">
+                <textarea id="tokenResult2" class="token2-ta" placeholder="Waiting for EAAB token..."></textarea>
+                <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('tokenResult2').value)">COPY</button>
+            </div>
+        </div>
+
+        <div class="alert-error"></div>
+        <div class="loading-example">◈ Processing... ◈</div>
+
+        <div class="buttons">
+            <button id="btnGetAccessToken">⟳ Refresh</button>
+            <button id="btnImportCookie">↑ Import</button>
+            <button id="btncookielogout">⏻ Logout</button>
+        </div>
+
+        <div class="divider"></div>
+
+        <div id="list_cookie">
+            <div class="list-header">◈ Saved Sessions</div>
+        </div>
+
     </div>
-
-    <div class="section">
-        <label for="tokenResult">Token (EAAG)</label>
-        <textarea id="tokenResult" placeholder="Waiting for token..."></textarea>
-    </div>
-
-    <div class="section">
-        <label for="tokenResult2">Token (EAAB)</label>
-        <textarea id="tokenResult2" placeholder="Waiting for token..."></textarea>
-    </div>
-
-    <div class="alert-error"></div>
-    <div class="loading-example">Working...</div>
-
-    <div class="buttons">
-        <button id="btnGetAccessToken">Refresh</button>
-        <button id="btnImportCookie">Import</button>
-        <button id="btncookielogout">Logout</button>
-    </div>
-
-    <div id="list_cookie"></div>
-
     <script src="index.js"></script>
 </body>
 </html>
