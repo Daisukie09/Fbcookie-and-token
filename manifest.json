@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "fbcookie & Token",
+  "version": "1.0",
+  "description": "Extract Facebook Cookies and Tokens easily.",
+  "permissions": [
+    "cookies",
+    "tabs",
+    "scripting",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://*.facebook.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "fbcookie.png"
+  },
+  "icons": {
+    "16": "fbcookie.png",
+    "48": "fbcookie.png",
+    "128": "fbcookie.png"
+  }
+}
